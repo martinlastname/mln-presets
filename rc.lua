@@ -1,5 +1,4 @@
 --[[
-
 Awesome WM configuration template
 github.com/lcpz
 
@@ -85,21 +84,7 @@ awful.spawn.with_shell(
 
 -- {{{ Variable definitions
 
-local themes = {
-        "blackburn",       -- 1
-        "copland",         -- 2
-        "dremora",         -- 3
-        "holo",            -- 4
-        "multicolor",      -- 5
-        "powerarrow",      -- 6
-        "powerarrow-dark", -- 7
-        "rainbow",         -- 8
-        "steamburn",       -- 9
-        "vertex"           -- 10
-}
-
---local chosen_theme = themes[8]
-local chosen_theme = "custom"
+local chosen_theme = "mln-full"
 local modkey       = "Mod4"
 local altkey       = "Mod1"
 --local terminal     = "urxvtc"
@@ -255,7 +240,7 @@ screen.connect_signal("property::geometry", function(s)
                 --gears.wallpaper.maximized(wallpaper, s, true)
         end
         ]]--
-        --beautiful.set_wallpaper(s)
+        beautiful.set_wallpaper(s)
 end)
 
 -- No borders when rearranging only 1 non-floating or maximized client
@@ -457,7 +442,7 @@ function ()
 end,
 {description = "volume 0%", group = "hotkeys"}),
 
--- User programs
+-- mln-launchers
 awful.key({ modkey }, "a", function () awful.spawn("flatpak run net.ankiweb.Anki") end,
 {description = "run anki", group = "launcher"}),
 awful.key({ modkey }, "s", function () awful.spawn("steam") end,
@@ -471,6 +456,12 @@ awful.key({ modkey }, "t", function () awful.spawn("thunar") end,
 {description = "run file manager", group = "launcher"}),
 awful.key({ modkey }, "e", function () awful.spawn("gnome-encfs-manager") end,
 {description = "run encfs manager", group = "launcher"}),
+
+-- Toggle systray
+awful.key({ modkey }, "y", function ()  
+        beautiful.systraywidget.visible = not beautiful.systraywidget.visible
+end,
+{description = "toggle systray", group = "awesome"}),
 
 
 -- Default
@@ -797,13 +788,16 @@ end)
 --    c:emit_signal("request::activate", "mouse_enter", {raise = vi_focus})
 --end)
 
-client.connect_signal("focus", function(c) 
-        c.border_color = beautiful.border_focus
-        c.opacity = 1
-end)
-client.connect_signal("unfocus", function(c) 
-        c.border_color = beautiful.border_normal 
-        c.opacity=0.90
-end)
+if (beautiful.useTransparency) then
+        client.connect_signal("focus", function(c) 
+                c.border_color = beautiful.border_focus
+                c.opacity = 1
+        end)
+        client.connect_signal("unfocus", function(c) 
+                c.border_color = beautiful.border_normal 
+                c.opacity=0.90
+        end)
+end
+
 
 -- }}}

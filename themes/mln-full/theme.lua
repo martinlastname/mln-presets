@@ -18,9 +18,7 @@ local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 local theme                                     = {}
 theme.default_dir                               = require("awful.util").get_themes_dir() .. "default"
---theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/rainbow"
-theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/custom"
---theme.wallpaper                                 = theme.dir .. "/wall.png"
+theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/mln-full"
 theme.wallpaper                                 = theme.dir .. "/wallpapers/Home.png"
 theme.wallpaperDir                              = theme.dir .. "/wallpapers/"
 theme.font                                      = "Terminus 10.5"
@@ -28,10 +26,11 @@ theme.fg_normal                                 = "#9E9E9E"
 theme.fg_focus                                  = "#EBEBFF"
 theme.bg_normal                                 = "#242424"
 theme.bg_focus                                  = "#242424"
-theme.tasklist_bg_normal                        = theme.bg_normal .. "77"
-theme.tasklist_bg_focus                         = theme.bg_focus .. "AA"
-theme.fg_urgent                                 = "#000000"
-theme.bg_urgent                                 = "#FFFFFF"
+theme.vb_normal                                 = "#000000"
+theme.tasklist_bg_normal                        = theme.bg_normal
+theme.tasklist_bg_focus                         = theme.bg_focus
+theme.fg_urgent                                 = "000000"
+theme.bg_urgent                                 = "FFFFFF"
 theme.border_width                              = dpi(1)
 theme.border_normal                             = "#242424"
 theme.border_focus                              = "#EBEBFF"
@@ -63,8 +62,6 @@ theme.layout_txt_max                            = "[m]"
 theme.layout_txt_fullscreen                     = "[F]"
 theme.layout_txt_magnifier                      = "[M]"
 theme.layout_txt_floating                       = "[*]"
-theme.layout_tile                               = theme.dir .. "/icons/Layout_Tile.png"
-theme.layout_spiral                             = theme.dir .. "/icons/Layout_Spiral.png"
 theme.titlebar_close_button_normal              = theme.default_dir.."/titlebar/close_normal.png"
 theme.titlebar_close_button_focus               = theme.default_dir.."/titlebar/close_focus.png"
 theme.titlebar_minimize_button_normal           = theme.default_dir.."/titlebar/minimize_normal.png"
@@ -92,6 +89,27 @@ theme.layout_txt_cascadetile                    = "[cascadetile]"
 theme.layout_txt_centerwork                     = "[centerwork]"
 theme.layout_txt_termfair                       = "[termfair]"
 theme.layout_txt_centerfair                     = "[centerfair]"
+
+-- mln-specific
+theme.useTransparency                           = true
+local systraywidget = wibox.widget.systray()
+theme.systraywidget = systraywidget
+systraywidget.visible                           = false
+
+theme.layout_tile                               = theme.dir .. "/icons/Layout_Tile.png"
+theme.layout_spiral                             = theme.dir .. "/icons/Layout_Spiral.png"
+
+if (theme.useTransparency) then
+        theme.bg_normal                         = theme.bg_normal .. "44"
+        theme.bg_focus                          = theme.bg_focus
+        theme.tasklist_bg_focus                 = "#00000000"
+        theme.tasklist_bg_normal                = "#00000000"
+        theme.taglist_bg_focus                  = "#00000000"
+        theme.bg_systray                        = "#44444400"
+        
+        -- Currently bugged/non-functional.
+        systraywidget.opacity                   = 0.5
+end
 
 local markup = lain.util.markup
 local white  = theme.fg_focus
@@ -177,7 +195,7 @@ theme.volume = lain.widget.alsabar({
         ticks = true, width = dpi(67),
         notification_preset = { font = theme.font }
 })
-theme.volume.tooltip.wibox.fg = "#000000"--theme.fg_focus
+theme.volume.tooltip.wibox.fg = theme.vb_normal
 theme.volume.tooltip.wibox.font = theme.font
 theme.volume.bar:buttons(my_table.join (
 awful.button({}, 1, function()
@@ -200,8 +218,10 @@ awful.button({}, 5, function()
         theme.volume.update()
 end)
 ))
-local volumebg = wibox.container.background(theme.volume.bar, "#585858", gears.shape.rectangle)
+--local volumebg = wibox.container.background(theme.volume.bar, "#585858", gears.shape.rectangle)
+local volumebg = wibox.container.background(theme.volume.bar, theme.bg_normal , gears.shape.rectangle)
 local volumewidget = wibox.container.margin(volumebg, dpi(7), dpi(7), dpi(5), dpi(5))
+
 
 -- Weather
 --[[ to be set before use
@@ -309,7 +329,7 @@ function theme.at_screen_connect(s)
         s.mytasklist.bg = theme.tasklist_bg_normal
 
         -- Create the wibox
-        s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(18), bg = theme.bg_normal .. "00", fg = theme.fg_normal })
+        s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(18), bg = theme.bg_normal, fg = theme.fg_normal })
 
         -- Add widgets to the wibox
         s.mywibox:setup {
@@ -328,7 +348,7 @@ function theme.at_screen_connect(s)
         s.mytasklist, -- Middle widget
         { -- Right widgets
         layout = wibox.layout.fixed.horizontal,
-        wibox.widget.systray(),
+        systraywidget,
         spr,
         --theme.mpd.widget,
         --theme.mail.widget,
@@ -338,7 +358,6 @@ function theme.at_screen_connect(s)
 },
     }
 end
-
 
 
 return theme
